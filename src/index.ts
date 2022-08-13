@@ -15,6 +15,17 @@ interface IRes {
 const converter: any = (records: any[]) =>
     records.map((item: any) => Object.keys(item._fieldLookup).map((key: string) => item._fields[item._fieldLookup[key]])).flatMap((item) => item);
 
+const converterWithRelationShip: any = (records: any[]) =>
+    records
+        .map((item: any) => Object.keys(item._fieldLookup).map((key: string) => item._fields[item._fieldLookup[key]]))
+        .map((item) => {
+            return {
+                origin: item[0],
+                relationShip: item[1],
+                join: item[2],
+            };
+        });
+
 app.use("/graph", (req: any, res: Response, next: NextFunction) => {
     const _driver = driver(
         `bolt://${process.env.NEO4J_HOST}:${process.env.NEO4J_PORT}`,
@@ -60,10 +71,10 @@ app.get("/graph/all", async (req: any, res: Response, next: NextFunction) => {
     if (req["graphDB"]) {
         const _session: Session = req["db_session"];
         _session
-            .run("MATCH (n) RETURN n")
+            .run("MATCH (n)<-[r]-(m) RETURN n, type(r), m;")
             .then((result) => {
                 res.status(200).json({
-                    data: converter(result.records),
+                    data: converterWithRelationShip(result.records),
                 });
             })
             .catch((error) => {
