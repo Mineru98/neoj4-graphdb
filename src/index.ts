@@ -214,7 +214,7 @@ app.delete("/graph/:id", async (req: any, res: Response, next: NextFunction) => 
     }
 });
 
-app.listen(8080, () => {
+app.listen(process.env.PORT, () => {
     console.log(`
   ################################################
   🛡️  Server listening on port: 8080🛡️
