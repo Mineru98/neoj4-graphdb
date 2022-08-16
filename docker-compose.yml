@@ -1,0 +1,28 @@
+version: "3.3"
+volumes:
+    graph_db: {}
+services:
+    node:
+        image: node16
+        container_name: graph_service
+        build:
+            context: .
+            dockerfile: ./
+        ports:
+            - "8080:8080"
+        depends_on:
+            - db
+        links:
+            - db:db
+    db:
+        image: neo4j
+        container_name: neo4jhost
+        user: "${UID}:${GID}"
+        ports:
+            - "7474:7474"
+            - "7687:7687"
+        volumes:
+            - graph_db:/data
+        environment:
+            - NEO4J_AUTH=neo4j/password
+        restart: always
