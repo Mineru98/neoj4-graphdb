@@ -3,7 +3,7 @@ volumes:
     graph_db: {}
 services:
     node:
-        image: node16
+        image: graph_service
         container_name: graph_service
         build:
             context: .
